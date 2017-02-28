@@ -29,9 +29,22 @@ Status InitQueue(SqQueue *Q)
     Q->rear=0;
     return OK;
 }
+Status ClearQueue(SqQueue *Q)
+{
+    Q->front=Q->rear=0;
+    return OK;
+}
+Status QueueEmpty(SqQueue Q)
+{
+    if(Q.front=Q.rear)
+        return TRUE;
+    else
+        return ERROR;
+}
 int QueueLength(SqQueue Q)
 {
-    return (Q.rear-Q.front+MAXSIZE)&MAXSIZE;
+    return (Q.rear-Q.front+MAXSIZE)%MAXSIZE;
+
 }
 Status EnQueue(SqQueue *Q,QElemType e)
 {
@@ -49,4 +62,69 @@ Status DeQueue(SqQueue *Q,QElemType *e)
     Q->front=(Q->front+1)%MAXSIZE;
     return OK;
 }
+Status GetHead(SqQueue Q,QElemType *e)
+{
+    if(Q.front==Q.rear)
+        return ERROR;
+    *e=Q.data[Q.front];
+    return OK;
+}
+Status QueueTraverse(SqQueue Q)
+{
+    int i;
+    i=Q.front;
+    while((i+Q.front)!=Q.rear)
+    {
+        visit(Q.data[i]);
+        i=(i+1)%MAXSIZE;
+    }
+    printf("\n");
+    return OK;
+}
+int main()
+{
+    Status j;
+    int i=0,l;
+    QElemType d;
+    SqQueue Q;
+    InitQueue(&Q);
+    printf("初始化队列后，队列空否？%u(1:空 0:否)\n",QueueEmpty(Q));
+    printf("请输入整型队列元素(不超过%d个),-1为提前结束符: \n",MAXSIZE-1);
+	do
+	{   /* scanf("%d",&d); */
+		d=i+100;
+		if(d==-1)
+			break;
+		i++;
+		EnQueue(&Q,d);
+	}while(i<MAXSIZE-1);
+	printf("队列长度为: %d\n",QueueLength(Q));
 
+	printf("现在队列空否？%u(1:空 0:否)\n",QueueEmpty(Q));
+	printf("连续%d次由队头删除元素,队尾插入元素:\n",MAXSIZE);
+	for(l=1;l<=MAXSIZE;l++)
+    {
+        DeQueue(&Q,&d);
+        printf("删除的元素是%d,插入的元素:%d \n",d,l+1000);
+        d=l+1000;
+        EnQueue(&Q,d);
+    }
+    l=QueueLength(Q);
+    printf("现在队列中的元素为:\n");
+    QueueTraverse(Q);
+    printf("共向队尾插入了%d个元素\n",i+MAXSIZE);
+    if(l-2>0)
+        printf("现在由对头删除%d个元素:\n");
+    while(QueueLength(Q)>2)
+    {
+        DeQueue(&Q,&d);
+        printf("删除的元素值为%d\n",d);
+    }
+    j=GetHead(Q,&d);
+    if(j)
+        printf("现在的对头元素为:%d\n",d);
+    ClearQueue(&Q);
+    printf("清空队列后，队列空否？%u(1:空 0:否)\n",QueueEmpty(Q));
+    return 0;
+
+}
